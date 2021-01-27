@@ -3,37 +3,49 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-#define SIDES 4
-#define EXPECTED 5 // This is set per the Chi Squared test
+#include "chi.h"
+
+#define SIDES 20
 
 int
 main(int argc, char **argv)
 {
-  int counter[SIDES];
-  int n;
+  char input[8];
+  int num, total;
+  double observed[SIDES], expected[SIDES];
 
-  int total = SIDES * EXPECTED;
+  total = 0;
+  memset(observed, 0, sizeof observed);
+  memset(input, 0, sizeof input);
 
-  memset(counter, 0, sizeof counter);
-
-  for (int i = 0; i < total; i++) {
-    scanf("%d", &n);
-    printf("%d\n", n);
-    if (n >= 1 && n <= SIDES)
-      counter[n-1] += 1;
-    else {
-      printf("Invalid number, use 1 through %d.\n", SIDES);
-      i--;
+  /* Load observed data */
+  while (scanf("%s", input) != EOF) {
+    num = atoi(input);
+    if (num >= 1 && num <= SIDES) {
+      printf("%d\n", num);
+      observed[num-1] += 1;
+      total += 1;
     }
     getchar();
   }
 
-  fputs("##### RESULTS #####\n", stderr);
-  fprintf(stderr, "TOTAL: %d\n", total);
+  /* Random = flat distribution */
   for (int i = 0; i < SIDES; i++)
-    fprintf(stderr, "%d: %d %3.0f%%\n", i+1, counter[i], (counter[i] / (float) total)*100);
+    expected[i] = (double) total / SIDES;
+
+  /* Print basic statistical data */
+  fputs("##### RESULTS #####\n", stderr);
+  fputs("Num:\tExp:\tObs:\tPer:\t\n", stderr);
+  for (int i = 0; i < SIDES; i++)
+    fprintf(stderr, "%d:\t %2.0f\t %2.0f\t %3.0f%%\n", i+1, expected[i], observed[i], (observed[i] / total)*100);
+
+  /* Calculate and print Chi Squared test data*/
+  double chi2 = chiSquared(observed, expected, SIDES);
+  fprintf(stderr, "Chi Squared: %2.2f\n", chi2-1);
   
   return 0;
 }
