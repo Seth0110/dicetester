@@ -1,13 +1,9 @@
 CC=gcc
 CFLAGS=-Wall -Werror -pedantic -std=c99
-DEPS = chi.h
-LIBS=-lm -I.
+LIBS=-lgsl -lm
 
-dt: dt.o chi.o
-	$(CC) -o dt dt.o chi.o $(LIBS)
-
-test: test.o chi.o
-	$(CC) -o test test.o chi.o $(LIBS)
+dt: dt.o
+	$(CC) -o dt dt.o $(LIBS)
 
 clean:
-	rm -f *.o dt test
+	rm -f *.o dt

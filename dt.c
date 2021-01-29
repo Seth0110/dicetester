@@ -6,10 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <gsl/gsl_cdf.h>
 
-#include "chi.h"
+#define SIDES 6
 
-#define SIDES 20
+double
+chiSquared(double *observed, double *expected, int sides) {
+  double sum = 0.0;
+  for (int i = 0; i < sides; i++)
+    sum += pow((observed[i] - expected[i]), 2) / expected[i];
+  return sum;
+}
 
 int
 main(int argc, char **argv)
@@ -37,17 +44,19 @@ main(int argc, char **argv)
   for (int i = 0; i < SIDES; i++)
     expected[i] = (double) total / SIDES;
 
-  /* Print basic statistical data */
-  fputs("##### RESULTS #####\n", stderr);
+  double chi2 = chiSquared(observed, expected, SIDES);
+  double pval = 1-gsl_cdf_chisq_P(chi2, SIDES-1);
+
+  fputs("\n########## RESULTS ##########\n", stderr);
   fputs("Num:\tExp:\tObs:\tPer:\t\n", stderr);
   for (int i = 0; i < SIDES; i++)
     fprintf(stderr, "%d:\t %2.0f\t %2.0f\t %3.0f%%\n", i+1, expected[i], observed[i], (observed[i] / total)*100);
-
-  /* Calculate and print Chi Squared test data*/
-  double chi2 = chiSquared(observed, expected, SIDES);
-  double pvalue = 1-appxIntegral(0,chi2,chiSquaredPDF,SIDES-1);
-  fprintf(stderr, "Chi Squared: %2.2f\n", chi2-1);
-  fprintf(stderr, "P-Value: %2.2f\n", pvalue);
+  if (pval >= 0.1)
+    fputs("\nDie is fair :)\n", stderr);
+  else if (pval > 0.05)
+    fputs("\nDie is probably fair\n", stderr);
+  else
+    fputs("\nDie not fair :(\n", stderr);
   
   return 0;
 }

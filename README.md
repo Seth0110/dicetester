@@ -2,32 +2,22 @@
 
 Test the accuracy of a die or pool of dice.
 
-Set SIDES to the number of sides of the die/dice in question  
-Build with `make dt`
+## How to build
 
-Manually roll dice and input the numbers, use pipes to save/reload data:  
-`./dt > output.dat`  
+- Depends on GSL, install with `apt install libgsl-dev` on debian-based systems.  
+- Set SIDES to the number of sides of the die/dice in question.  
+- Build with `make dt`
+
+## How to use
+
+Manually roll dice and input the numbers into a file one per line.  
+Use pipes to load the data:  
 `<input.dat ./dt`
 
-# Future improvements
+Randomness is calculated using the Chi Squared test.  
+For best results make sure the observed sample size is greater than 5x number of sides.
 
-Planned features:  
-- Interactive Mode: -i flag to prompt for dice input, otherwise just use stdin/stdout and end at EOF
-- Chi Squared Test: "Simple" randomness test, defined below
-  
-# Chi Squared Test
+## Future improvements
 
-Total samples should be >= degrees of freedom * 5
-
-Sum of (O-E)^2/E = Χ^2 where O = Observed value, E = Expected value.  
-Then compare Χ^2 result against Chi Squared Distribution for the proper degrees of freedom minus one to get %  
-PDF Chi Squared Distribution: f(x) = 2^(1-n/2)*x^(n-1)*e^(-(x^2)/2) / G(n/2)  
-Can use CDF to get an exact answer without integrating, or calculate an approximate integral of PDF
-  n -> Degrees of freedom
-  G -> Gamma function G(x) => Included in GNU math.h
-  
-Probability for the probability of the percent calculated and up -> P value  
-P < Alpha -> Reject hypothesis (dice are random)  
-P >= Alpha -> Do not reject hypothesis (dice still could be not random but looks good via the test)
-  P = (Integral of 0 to P)-1
-Alpha -> Significance level -> Usually .05, can be .01 to .1
+Interactive Mode: -i flag to prompt for dice input instead of only using stdin/stdout  
+Auto-detect range: Maximum and minimum values determine degrees of freedom
