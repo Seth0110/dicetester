@@ -3,7 +3,7 @@
 Test the accuracy of a die or pool of dice.
 
 Set SIDES to the number of sides of the die/dice in question  
-Build with make dt
+Build with `make dt`
 
 Manually roll dice and input the numbers, use pipes to save/reload data:  
 `./dt > output.dat`  

@@ -45,7 +45,9 @@ main(int argc, char **argv)
 
   /* Calculate and print Chi Squared test data*/
   double chi2 = chiSquared(observed, expected, SIDES);
+  double pvalue = 1-appxIntegral(0,chi2,chiSquaredPDF,SIDES-1);
   fprintf(stderr, "Chi Squared: %2.2f\n", chi2-1);
+  fprintf(stderr, "P-Value: %2.2f\n", pvalue);
   
   return 0;
 }

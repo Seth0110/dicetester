@@ -14,10 +14,19 @@ chiSquared(double *observed, double *expected, int k) {
   return sum;
 }
 
-/* double */
-/* chiSquaredPDF(int x, int k, int n) { */
-/*   return (pow(2, ((1-n)/2)) * */
-/* 	  pow(x, (n-1)) * */
-/* 	  pow(M_E, (0-(pow(x,2)/2)))) / */
-/*     lgamma(n/2); */
-/* } */
+double
+chiSquaredPDF(double x, double k) {
+  return x <= 0 ? 0 :
+    (pow(x,(k/2)-1) * pow(M_E,0-(x/2))) /
+    (pow(2, (2/k)) * tgamma(k/2));
+}
+
+/* Integral from a to b of two-arg function fn given the second argument */
+double
+appxIntegral(double a, double b, double fn(double, double), double arg2) {
+  double sum = 0.0;
+  double interval = 0.00001;
+  for (double i = a; i < b; i += interval)
+    sum += fn(i, arg2) * interval;
+  return sum;
+}
